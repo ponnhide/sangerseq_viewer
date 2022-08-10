@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import argparse
+from sangerseq_viewer.sangerseq_viewer import * 
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("-q", "--query",     type=str,  help="Abi file path.")
+    p.add_argument("-s", "--subject",   type=str,  help="Genbank file path.")
+    p.add_argument("-l", "--linebreak", type=int,  default=None, help="Sequence length for line break.")
+    p.add_argument("-o", "--output",    type=str,  default=None, help="Output file path. The output image format can be specified by the filename extension.")
+    p.add_argument("-rs", "--start",    type=int,  default=None, help="Start position of the subject sequence region to be visualized.")
+    p.add_argument("-re", "--end",      type=int,  default=None, help="End position of the subject sequence region to be visualized.")
+    p.add_argument("-wq", "--quality",  choices=("True", "False"), default="True", help="If True, display bar plot representing Quality value at each nucleotide position.")
+    p.add_argument("-d",  "--dpi",      type=int,  default=None, help="Resolution of the output image. If output format is pdf, the value is ignored.")
+
+    args      = p.parse_args() 
+    abipath   = args.query 
+    gbkpath   = args.subject
+    linebreak = args.linebreak
+    output    = args.output
+    start     = args.start
+    end       = args.end
+    quality   = args.quality
+    quality = True if quality == "True" else False
+    dpi = args.dpi
+    ax_all = view_sanger(gbkpath, abipath, start, end, linebreak=linebreak, output=output, display_quality=quality, dpi=dpi) 

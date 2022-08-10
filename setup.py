@@ -31,6 +31,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
 ]
 
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     
     import sys
     if sys.version_info[:2] < (3, 7):
-        raise RuntimeError("patchworklib requires python >= 3.7.")
+        raise RuntimeError("sangerseq_viewer requires python >= 3.7.")
 
     setup(
         name=DISTNAME,

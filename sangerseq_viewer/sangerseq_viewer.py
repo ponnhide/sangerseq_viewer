@@ -2,8 +2,6 @@ import os
 import sys 
 import copy
 import argparse
-sys.path = ["/Users/hideto/dropbox/HIDETO_MORI.LAB/Experiments/Project/Patchplot/patchworklib"] + sys.path
-sys.path.append("/Users/hideto/dropbox/HIDETO_MORI.LAB/Experiments/Project/Dbrick/github")
 import patchworklib as pw
 from QUEEN.queen import * 
 from Bio import SeqIO
@@ -108,10 +106,17 @@ def abi_to_dict(filename):
             abi_data["_channel"]["A"][0].append(i+step*j)
             abi_data["_channel"]["T"][0].append(i+step*j) 
             abi_data["_channel"]["C"][0].append(i+step*j)   
-            abi_data["_channel"]["G"][1].append(record.annotations['abif_raw']["DATA9"][pos-5+j])   
-            abi_data["_channel"]["A"][1].append(record.annotations['abif_raw']["DATA10"][pos-5+j])
-            abi_data["_channel"]["T"][1].append(record.annotations['abif_raw']["DATA11"][pos-5+j]) 
-            abi_data["_channel"]["C"][1].append(record.annotations['abif_raw']["DATA12"][pos-5+j])  
+            try:
+                abi_data["_channel"]["G"][1].append(record.annotations['abif_raw']["DATA9"][pos-5+j])   
+                abi_data["_channel"]["A"][1].append(record.annotations['abif_raw']["DATA10"][pos-5+j])
+                abi_data["_channel"]["T"][1].append(record.annotations['abif_raw']["DATA11"][pos-5+j]) 
+                abi_data["_channel"]["C"][1].append(record.annotations['abif_raw']["DATA12"][pos-5+j])  
+            except:
+                abi_data["_channel"]["G"][1].append(0)   
+                abi_data["_channel"]["A"][1].append(0)
+                abi_data["_channel"]["T"][1].append(0) 
+                abi_data["_channel"]["C"][1].append(0)  
+
         pos_set.append((pre_pos, pos))
         pre_pos = pos
     pos_set.append((pre_pos, record.annotations['abif_raw']["PLOC1"][-1]))
@@ -390,7 +395,7 @@ def reform_abidata(abi_data, seqB, strand):
         abi_data["_channel_wgap"] = copy.deepcopy(abi_data["_channel"]) 
     return abi_data         
 
-def visualize_abi(pos, subject, abi_data, query, abiname=None, zero_position=0, label=False):
+def visualize_abi(pos, subject, abi_data, query, abiname=None, zero_position=0, label=False, single=False):
     values = [] 
     ax  = pw.Brick(figsize=(pos.x1 - pos.x0, 0.6)) 
     axpos = ax.get_position() 
@@ -455,8 +460,9 @@ def visualize_abi(pos, subject, abi_data, query, abiname=None, zero_position=0, 
     ax2.set_xlim(0, len(subject.seq))
     ax2.set_xticks([])
     ax2.set_ylim(0,70)
-    ax2.set_yticks([0,20,40,60])
-    ax2.set_ylabel("Quality")
+    ax2.set_yticks([0,30,60])
+    if single == True:
+        ax2.set_ylabel("Quality")
     axquery = pw.Brick(figsize=(pos.x1 - pos.x0, pos.y1 - pos.y0)) 
     colorbar(axquery, color_dict, query, subject.seq, char=True, fontsize=10, label=label, zero_position=zero_position)
     return ax, ax2, axquery 
@@ -553,7 +559,10 @@ def visualize(subject, abi_data, query, abiname=None, start=0, end=None, display
             subax = (ax/axquery) 
             subax_list.append(subax) 
         pw.param["margin"] = 0.05
-        sub_axes = pw.stack(subax_list, operator="/") 
+        sub_axes = pw.stack(subax_list, operator="/")
+        sub_axes.set_supylabel("Quality", labelpad=4) 
+        sub_axes.set_supspine()
+        sub_axes._case.spines["left"].set_linewidth(0.4) 
         pw.param["margin"] = None
         ax_all = axmap/sub_axes
         pw.param["margin"] = 0.05
@@ -562,7 +571,7 @@ def visualize(subject, abi_data, query, abiname=None, start=0, end=None, display
         mappos = axmap.bricks_dict[keys[0]].get_position()
         axmap.bricks_dict[keys[0]].change_plotsize([mappos.x1-mappos.x0, (mappos.y1-mappos.y0)*0.95])
         axmap = axmap.bricks_dict[keys[0]]/axmap.bricks_dict[keys[1]]
-        ax1, ax2, axquery = visualize_abi(pos, subject, abi_data, query, abiname=abiname, zero_position=start, label=True) 
+        ax1, ax2, axquery = visualize_abi(pos, subject, abi_data, query, abiname=abiname, zero_position=start, label=True, single=True) 
         
         if display_quality == True:
             ax = pw.Bricks({ax1.get_label():ax1, ax2.get_label():ax2})
@@ -645,7 +654,7 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
                 
                 if strand == 1:
                     nstart = ms
-                    nend   = mn
+                    nend   = me
                 else:
                     nstart, nend   = (len(aabidata["conf"][0]) - me, len(aabidata["conf"][0]) - ms) 
                 
@@ -780,7 +789,7 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
             new_abidata = copy.deepcopy(abidata)  
             if strand == 1:
                 nstart = ms
-                nend   = mn
+                nend   = me
             else:
                 nstart, nend   = (len(abidata["conf"][0]) - me, len(abidata["conf"][0]) - ms) 
             
@@ -851,7 +860,7 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
 #    p.add_argument("-re", "--end",      type=int,  default=None, help="End position of the subject sequence region to be visualized")
 #    p.add_argument("-wq", "--quality",  choices=("True", "False"), default="True", help="If True, display bar plot representing Quality value at each nucleotide position.")
 #    p.add_argument("-d",  "--dpi",       type=int,  default=None, help="Resolution of the output image. If output format is pdf, the value is ignored.")
-
+#
 #    args      = p.parse_args() 
 #    abipath   = args.query 
 #    gbkpath   = args.subject

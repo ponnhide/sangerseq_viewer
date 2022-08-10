@@ -10,6 +10,7 @@ Here, I provide sangerseq_viewer that allow us to visulize sanger sequncing resu
 
 *sangerseq_viewer is depend on m packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN). Both packaeges provide APIs for handling matplotlib subplots and GenBank files, respectivily. If you are interested in them, please see their documents. *
 
+You can try to run sangerseq_viewer
 ## Software dependency
 - python 3.8.0 or later
 	
@@ -20,10 +21,10 @@ Plese execute the following commands.
 ```
 pip install patchworklib
 pip install python-queen
-pip install sangerseq-viewer --prefix=PREFIX
+pip install sangerseq-viewer 
 ```
-`PREFIX` is the executable path of sangerseq_viewer. 
-By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line.
+
+If you cannnot use `sangerseq_viewr` command after the installation, please add '--prefix=PREFIX` option to `pip install sangerseq-viewer` and try re-installation. `PREFIX` is the executable path of sangerseq_viewer.
 
 ## Example code
 **Example command 1**

@@ -852,7 +852,7 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
 
 #if __name__ == "__main__":
 #    p = argparse.ArgumentParser()
-#    p.add_argument("-q", "--query",     type=str,  help="abi file path")
+#    p.add_argument("-q", "--query",     type=str,  help="abi file path or path to the directory containing ab1 files")
 #    p.add_argument("-s", "--subject",   type=str,  help="genbank file path")
 #    p.add_argument("-l", "--linebreak", type=int,  default=None, help="Sequence length for line break")
 #    p.add_argument("-o", "--output",    type=str,  default=None, help="Output file path")

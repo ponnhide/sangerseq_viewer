@@ -20,7 +20,7 @@ Plese execute the following commands.
 ```
 pip install patchworklib
 pip install python-queen
-pip install sangerseq_viewer --prefix=PREFIX
+pip install sangerseq-viewer --prefix=PREFIX
 ```
 `PREFIX` is the executable path of sangerseq_viewer. 
 By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line.

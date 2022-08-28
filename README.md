@@ -24,7 +24,7 @@ pip install python-queen
 pip install sangerseq-viewer 
 ```
 
-If you cannnot use `sangerseq_viewr` command after the installation, please add '--prefix=PREFIX` option to `pip install sangerseq-viewer` and try re-installation. `PREFIX` is the executable path of sangerseq_viewer.
+If you cannnot use `sangerseq_viewr` command after the installation, please add `--prefix=PREFIX` option to `pip install sangerseq-viewer` and try re-installation. `PREFIX` is the executable path of sangerseq_viewer.
 
 ## Example code
 **Example command 1**

@@ -581,7 +581,7 @@ def visualize(subject, abi_data, query, abiname=None, start=0, end=None, display
         ax_all = axmap/(ax/axquery) 
     return ax_all
 
-def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=None, display_quality=True, dpi=None):
+def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=None, display_quality=True, dpi=None, output_cromatogram=None, output_fasta=None):
     template = QUEEN(record=gbkpath)
     project  = template.project    
     if start is None and end is None:
@@ -591,22 +591,37 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
             start = 0    
         if end is None:
             end = len(template.seq) 
-    
+
+
+    abifile_path_list = [] 
     if os.path.isdir(abipath):
-        abidata_list = [] 
-        query_list   = [] 
-        abifile_path_list = [] 
         for abifile_path in os.listdir(abipath):
             if ".ab1" == abifile_path[-4:]:
                 abifile_path = abipath + "/" + abifile_path 
-                abidata      = abi_to_dict(abifile_path)
-                query        = generate_consensusseq(abidata)
-                abidata_list.append(abidata)             
-                query_list.append(query)
-                abifile_path_list.append(abifile_path.split("/")[-1])
+                abifile_path_list.append(abifile_path) 
+        abifile_path_list.sort() 
 
-        template_aligned, query_aligned_list, nongap, region_start, region_end = recursive_alignment(template, query_list)
-         
+    elif abipath.split(".")[-1] in ("abi", "ab1"):
+        abifile_path_list.append(abipath)
+    
+    else:
+        with open(abipath) as f:
+            for line in f:
+                line = line.rstrip()
+                abifile_path_list.append(line) 
+
+    if len(abifile_path_list) > 1:
+        abidata_list = [] 
+        query_list   = [] 
+        abifile_name_list = [] 
+        for abifile_path in abifile_path_list:
+            abidata      = abi_to_dict(abifile_path)
+            query        = generate_consensusseq(abidata)
+            abidata_list.append(abidata)             
+            query_list.append(query)
+            abifile_name_list.append(abifile_path.split("/")[-1])
+
+        template_aligned, query_aligned_list, nongap, region_start, region_end = recursive_alignment(template, query_list)         
         if start is None and end is None:
             start = region_start
             end = region_end
@@ -713,11 +728,11 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
             query_aligned_list[i] = newquery
 
         if linebreak is None:
-            ax_all = visualize(template_aligned, new_abidata_list, query_aligned_list, abiname=abifile_path_list)
+            ax_all = visualize(template_aligned, new_abidata_list, query_aligned_list, abiname=abifile_name_list)
         else:
             ax_alls = []
             for i in range(0, len(template_aligned.seq), linebreak):
-                ax_all = visualize(template_aligned, new_abidata_list, query_aligned_list, abiname=abifile_path_list, start=i, end=i+linebreak if i+linebreak < len(template_aligned.seq) else len(template_aligned.seq),
+                ax_all = visualize(template_aligned, new_abidata_list, query_aligned_list, abiname=abifile_name_list, start=i, end=i+linebreak if i+linebreak < len(template_aligned.seq) else len(template_aligned.seq),
                                    display_quality=display_quality)
                 if i+linebreak > len(template_aligned.seq):
                     space = (i+linebreak - len(template_aligned.seq)) / linebreak
@@ -735,7 +750,10 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
                 ax_alls.append(ax_all) 
             pw.param["margin"] = 0.4
             ax_all = pw.stack(ax_alls, operator="/")
+    
     else:   
+        abipath = abifile_path_list[0]
+        abifile_name_list = [abipath.split("/")[-1]]
         abidata  = abi_to_dict(abipath)
         query    = generate_consensusseq(abidata)
         result_f = gl_alignment(template, query[0], single=True)
@@ -848,19 +866,51 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
         else:
             ax_all.savefig(output, dpi=dpi)
     
+    if len(abifile_path_list) == 1:
+        new_abidata_list   = [abidata]
+        query_aligned_list = [query_aligned] 
+        #template_aligned, new_abidata_list, query_aligned_list) 
+    
+    if output_cromatogram is None:
+        pass 
+    else:
+        with open(output_cromatogram, "w") as f:
+            for name, abidata in zip(abifile_name_list, new_abidata_list):
+                name = name + ":" + str(start) + ".." + str(end) 
+                row  = [name, "position"]
+                row.extend(list(abidata["_channel_wgap"]["A"][0])) 
+                print(*row, sep=",", file=f)  
+
+                for nucl in "ATGC":
+                    row = [name, "channel {}".format(nucl)] 
+                    row.extend(list(abidata["_channel_wgap"][nucl][1])) 
+                    print(*row, sep=",", file=f) 
+
+    if output_fasta is None:
+        pass 
+    else: 
+        with open(output_fasta, "w") as f:
+            print(">{}".format(project), file=f)
+            print(template_aligned.seq, file=f) 
+            for name, query_seq in zip(abifile_name_list, query_aligned_list): 
+                print(">{}".format(name), file=f)
+                print(query_seq.replace("/","-"), file=f) 
+            
     return ax_all 
 
 #if __name__ == "__main__":
 #    p = argparse.ArgumentParser()
-#    p.add_argument("-q", "--query",     type=str,  help="abi file path or path to the directory containing ab1 files")
-#    p.add_argument("-s", "--subject",   type=str,  help="genbank file path")
-#    p.add_argument("-l", "--linebreak", type=int,  default=None, help="Sequence length for line break")
-#    p.add_argument("-o", "--output",    type=str,  default=None, help="Output file path")
-#    p.add_argument("-rs", "--start",    type=int,  default=None, help="Start position of the subject sequence region to be visualized, The output image format should be specified by filename extension.")
-#    p.add_argument("-re", "--end",      type=int,  default=None, help="End position of the subject sequence region to be visualized")
-#    p.add_argument("-wq", "--quality",  choices=("True", "False"), default="True", help="If True, display bar plot representing Quality value at each nucleotide position.")
-#    p.add_argument("-d",  "--dpi",       type=int,  default=None, help="Resolution of the output image. If output format is pdf, the value is ignored.")
-#
+#    p.add_argument("-q",  "--query",     type=str,                                  help="abi file path, path to the directory containing ab1 files, or txt file path describing a ab1 file path on each line.")
+#    p.add_argument("-s",  "--subject",   type=str,                                  help="genbank file path")
+#    p.add_argument("-l",  "--linebreak", type=int,  default=None,                   help="Sequence length for line break")
+#    p.add_argument("-o",  "--output",    type=str,  default=None,                   help="Output image file path. The output image format should be specified by filename extension.")
+#    p.add_argument("-rs", "--start",    type=int,  default=None,                    help="Start position of the subject sequence region to be visualized")
+#    p.add_argument("-re", "--end",      type=int,  default=None,                    help="End position of the subject sequence region to be visualized")
+#    p.add_argument("-wq", "--quality",  choices=("True", "False"), default="True",  help="If True, display bar plot representing Quality value at each nucleotide position.")
+#    p.add_argument("-d",  "--dpi",      type=int,  default=None,                    help="Resolution of the output image. If output format is pdf, the value is ignored.")
+#    p.add_argument("-c",  "--output_cromatogram", type=str, default=None,           help="Output table file path. If the option is given, the values of Sanger sequencing cromatogram will be output as a csv file.")
+#    p.add_argument("-f",  "--output_fasta", type=str, default=None,                 help="Output FASTA file path. If the option is given, aligned sequences will be output as a Fasta file.")
+
 #    args      = p.parse_args() 
 #    abipath   = args.query 
 #    gbkpath   = args.subject
@@ -871,4 +921,4 @@ def view_sanger(gbkpath, abipath, start=None, end=None, linebreak=None, output=N
 #    quality   = args.quality
 #    quality = True if quality == "True" else False
 #    dpi       = args.dpi
-#    ax_all = view_sanger(gbkpath, abipath, start, end, linebreak=linebreak, output=output, display_quality=quality, dpi=dpi) 
+#    ax_all = view_sanger(gbkpath, abipath, start, end, linebreak=linebreak, output=output, display_quality=quality, dpi=dpi, output_cromatogram=args.output_cromatogram, output_fasta=args.output_fasta) 

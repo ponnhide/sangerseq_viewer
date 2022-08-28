@@ -8,7 +8,7 @@ Despite the fact that Sanger sequencing is one of the indispensable tasks in con
 
 Here, I provide sangerseq_viewer that allow us to visulize sanger sequncing result with a simple command.   
 
-*sangerseq_viewer is depend on m packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN). Both packaeges provide APIs for handling matplotlib subplots and GenBank files, respectivily. If you are interested in them, please see their documents. *
+*sangerseq_viewer is depend on m packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN). Both packages provide APIs for handling matplotlib subplots and GenBank files, respectivily. If you are interested in them, please see their documents. *
 
 ## Software dependency
 - python 3.8.0 or later
@@ -27,7 +27,7 @@ By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line
 
 ## Example code
 **Example command 1**
-`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/Spec-2xU6gRNA-1.ab1 -o output/example1.png --dpi 300`
+`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/Spec-2xU6gRNA-1.ab1 -o output/example1.png --dpi 200`
 
 **Output figure 1** 
 <img src="output/example1.png" width="1200x1200">
@@ -35,7 +35,7 @@ By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line
 ---
 
 **Example command 2**
-`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/Spec-2xU6gRNA-1.ab1 -o output/example2.png -l 200 --dpi 300`
+`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/Spec-2xU6gRNA-1.ab1 -o output/example2.png -l 200 --dpi 200`
 
 **Output figure 2**
 
@@ -44,7 +44,7 @@ By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line
 ---
 
 **Example command 3**
-`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/Spec-2xU6gRNA-1.ab1 -o output/example3.png-l 200 -rs 1700 -re 2100 --dpi 300`
+`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/Spec-2xU6gRNA-1.ab1 -o output/example3.png-l 200 -rs 1700 -re 2100 --dpi 200`
 
 **Output figure 3**
 
@@ -53,7 +53,7 @@ By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line
 ---
 
 **Example command 4**
-`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/ -o output/example4.png --dpi 300`
+`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/ -o output/example4.png --dpi 200`
 
 **Output figure 4**
 
@@ -62,7 +62,7 @@ By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line
 ---
 
 **Example command 5**
-`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/ -o output/example5.png -l 200 --dpi 300`
+`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/ -o output/example5.png -l 200 --dpi 200`
 
 **Output figure 5**
 
@@ -72,7 +72,7 @@ By specifying `--prefix`, you can run `sangerseq_viewer`  from your command line
 
 **Example command 6**
 
-`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/ -o output/example6.png -l 200 -rs 1700 -re 2100 --dpi 300`
+`sangerseq_viewer -s example_data/puc19_spec_2xu6grna.gb -q example_data/ab1/ -o output/example6.png -l 200 -rs 1700 -re 2100 --dpi 200`
 
 **Output figure 6**
 
@@ -85,23 +85,27 @@ SYNOPSIS
 sangerseq_viewer [-h] [-q QUERY] [-s SUBJECT] [-l LINEBREAK] [-o OUTPUT] [-rs START] [-re END] [-wq {True,False}] [-d DPI]
 
   -h, --help            
-     show this help message and exit
-  -q QUERY, --query QUERY
-     Abi file path.
-  -s SUBJECT, --subject SUBJECT
+     Show this help message and exit
+  -q, --query, str
+     Ab1 file path, path to the directory containing ab1 files, or txt file path describing a ab1 file path on each line.
+  -s, --subject, str
      Genbank file path.
-  -l LINEBREAK, --linebreak LINEBREAK
+  -l, --linebreak, int (optional, default: No line break)
      Sequence length for line break.
-  -o OUTPUT, --output OUTPUT
+  -o, --output, str (optional, default: No output) 
      Output file path. The output image format can be specified by the filename extension.
-  -rs START, --start START
+  -rs, --start, int (optional, default: 0) 
      Start position of the subject sequence region to be visualized. 
-  -re END, --end END    
+  -re, --end, int (optional, default: End position of the alinged region.)
      End position of the subject sequence region to be visualized.
-  -wq {True,False}, --quality {True,False}
+  -wq, --quality, {True,False} (optional, default: True)
      If True, display bar plot representing Quality value at each nucleotide position.
-  -d DPI, --dpi DPI     
+  -d, --dpi, float (optional, default: 200)
      Resolution of the output image. If output format is pdf, the value is ignored.
+  -c, --output_cromatogram (optional, defualt: None) 
+     Output table file path. If the option is given, the values of Sanger sequencing cromatogram will be output as a csv file.
+  -f, --output_fasta (optional, default: None)
+     Output FASTA file path. If the option is given, aligned sequences will be output as a Fasta file.
 ```
 
 

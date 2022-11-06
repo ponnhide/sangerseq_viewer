@@ -18,6 +18,7 @@ INSTALL_REQUIRES = [
     'matplotlib>=3.4.3',
     'patchworklib>=0.4.5',
     'python-queen>=1.1.0',
+    'seaborn',
 ]
 
 PACKAGES = [

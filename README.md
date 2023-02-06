@@ -8,7 +8,7 @@ Despite the fact that Sanger sequencing is one of the indispensable tasks in con
 
 Here, I provide sangerseq_viewer that allow us to visulize sanger sequncing result with a simple command.   
 
-*sangerseq_viewer is depend on m packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN). Both packages provide APIs for handling matplotlib subplots and GenBank files, respectivily. If you are interested in them, please see their documents. *
+*sangerseq_viewer is depend on the packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN). Both packages provide APIs for handling matplotlib subplots and GenBank files, respectivily. If you are interested in them, please see their documents. *
 
 You can try `sangerseq_viewer` from [Google colaboratory](https://colab.research.google.com/drive/1HysWJv6Afi-LFbowWL8_zgEAZcoMpP0X?usp=sharing).
 ## Software dependency

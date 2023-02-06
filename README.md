@@ -1,16 +1,12 @@
 # sangerseq_viewer Installation and User Manual
+sangerseq_viewer is a Python package for visualizing Sanger sequencing results and the corresponding annotated sequence maps automatically.  
+Despite being an essential task in DNA sequence construction and editing, there is a lack of open-source software that provides a user-friendly graphical representation of Sanger sequencing results. While commercial GUI software like Snapgene and Geneious Prime offer this functionality, manually processing large amounts of data from Sanger sequencing results can be a tedious and time-consuming task.  
+Sangerseq_viewer provides a solution by allowing you to visualize sequencing results with just a simple command.
 
+Note: Sangerseq_viewer relies on the packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN), which provide APIs for managing matplotlib subplots and GenBank files respectively. For more information, please refer to their respective documentation.
 
+You can test Sangerseq_viewer through [Google colaboratory](https://colab.research.google.com/drive/1HysWJv6Afi-LFbowWL8_zgEAZcoMpP0X?usp=sharing).
 
-sangerseq_viewer is a python package to automatically visualize Sanger sequencing results and the corresponding annotated sequence map. 
-
-Despite the fact that Sanger sequencing is one of the indispensable tasks in constructing and editing DNA sequences, there is no open-source software that provides an intuitive and understandable graphical representation of sequencing results.   Some commercial GUI software (Snapgene, Geneious prime) fulfills this requirement. However, now that it is common to design and construct dozens or hundreds of DNA sequences, manually processing large numbers of Sanger sequencing results is a tedious and time-consuming task.
-
-Here, I provide sangerseq_viewer that allow us to visulize sanger sequncing result with a simple command.   
-
-*sangerseq_viewer is depend on the packages [patchworklib](https://github.com/ponnhide/patchworklib) and [QUEEN](https://github.com/yachielab/QUEEN). Both packages provide APIs for handling matplotlib subplots and GenBank files, respectivily. If you are interested in them, please see their documents. *
-
-You can try `sangerseq_viewer` from [Google colaboratory](https://colab.research.google.com/drive/1HysWJv6Afi-LFbowWL8_zgEAZcoMpP0X?usp=sharing).
 ## Software dependency
 - python 3.8.0 or later
 	
